@@ -1,0 +1,114 @@
+{
+  "date": "2026-09-10",
+  "shader_sha256": "01bbce16b1961c9f61546b074b4931e95ca88ed6fd199ed1ddec426745b6b1f6",
+  "graph_manifest": {
+    "nodes": 165122,
+    "edges": 25563197,
+    "csr_nonzero": 25563197,
+    "contacts": 124025046,
+    "preparation_seconds": 10.45654787501553,
+    "scope": "All status=Traced neurons; glia/fragments/non-Traced records excluded; input-normalized approximate transmitter signs; synthetic drive for a backend benchmark",
+    "graph_bytes": 205166068
+  },
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "wgpu": "0.32.0",
+  "adapter": {
+    "vendor": "",
+    "architecture": "",
+    "device": "Apple M3",
+    "description": "",
+    "stackgroup_min_size": 4,
+    "stackgroup_max_size": 128,
+    "vendor_id": 0,
+    "device_id": 0,
+    "adapter_type": "IntegratedGPU",
+    "backend_type": "Metal"
+  },
+  "scope": "Native wgpu/Metal, not browser. Synthetic fixed drive; matched normalized signed rate dynamics, not LIF or biological validation. CPU includes arithmetic; GPU includes dispatch, completion and full-state readback. GPU results are per integration step.",
+  "results": [
+    {
+      "graph": "visual-1252",
+      "nodes": 1252,
+      "edges": 22850,
+      "cpu": {
+        "median_ms": 0.01727099879644811,
+        "p95_ms": 0.019837653962895274,
+        "samples": 30
+      },
+      "gpu": {
+        "scalar": {
+          "two_step_full_readback": {
+            "median_ms": 0.6988957466091961,
+            "p95_ms": 1.948186694062315,
+            "samples": 30
+          },
+          "hundred_step_full_readback": {
+            "median_ms": 0.059827090008184314,
+            "p95_ms": 0.10413008811883628,
+            "samples": 5
+          },
+          "max_abs_error_100_steps": 1.1920928955078125e-07,
+          "compile_ms": 38.45862502930686
+        },
+        "cooperative": {
+          "two_step_full_readback": {
+            "median_ms": 0.6897190032759681,
+            "p95_ms": 2.5778501469176263,
+            "samples": 30
+          },
+          "hundred_step_full_readback": {
+            "median_ms": 0.09573541989084333,
+            "p95_ms": 0.10837258596438915,
+            "samples": 5
+          },
+          "max_abs_error_100_steps": 1.7881393432617188e-07,
+          "compile_ms": 0.44420798076316714
+        }
+      }
+    },
+    {
+      "graph": "full-malecns",
+      "nodes": 165122,
+      "edges": 25563197,
+      "cpu": {
+        "median_ms": 21.837312524439767,
+        "p95_ms": 22.297693917062134,
+        "samples": 30
+      },
+      "gpu": {
+        "scalar": {
+          "two_step_full_readback": {
+            "median_ms": 7.042916506179608,
+            "p95_ms": 7.755263450962957,
+            "samples": 30
+          },
+          "hundred_step_full_readback": {
+            "median_ms": 6.3345345901325345,
+            "p95_ms": 6.407711172127165,
+            "samples": 5
+          },
+          "max_abs_error_100_steps": 1.4901161193847656e-07,
+          "compile_ms": 2.9254170367494226
+        },
+        "cooperative": {
+          "two_step_full_readback": {
+            "median_ms": 4.765697754919529,
+            "p95_ms": 5.836764744890388,
+            "samples": 30
+          },
+          "hundred_step_full_readback": {
+            "median_ms": 3.9479612495051697,
+            "p95_ms": 4.072060250211507,
+            "samples": 5
+          },
+          "max_abs_error_100_steps": 7.748603820800781e-07,
+          "compile_ms": 1.3224169961176813
+        }
+      }
+    }
+  ],
+  "graph_sha256": "ed36dc6642fa1866b7a75d6e97dcea6aef11908ac273e2f9e5c24038df645452",
+  "validation_steps": 100,
+  "initial_state_seed": 7,
+  "drive": "0.12 tonic + 0.5 on each 31st neuron"
+}

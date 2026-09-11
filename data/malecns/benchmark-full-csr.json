@@ -1,0 +1,9 @@
+{
+  "nodes": 165122,
+  "edges": 25563197,
+  "csr_nonzero": 25563197,
+  "contacts": 124025046,
+  "preparation_seconds": 10.45654787501553,
+  "scope": "All status=Traced neurons; glia/fragments/non-Traced records excluded; input-normalized approximate transmitter signs; synthetic drive for a backend benchmark",
+  "graph_bytes": 205166068
+}

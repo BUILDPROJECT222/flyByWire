@@ -1,0 +1,206 @@
+{
+  "full-vision-20260910T131456086304Z": {
+    "retina": {
+      "neurons": 3377,
+      "results": {
+        "intact": {
+          "accuracy": 0.375,
+          "total_spikes": 329878,
+          "varying_features": 10005
+        },
+        "shuffled": {
+          "accuracy": 0.375,
+          "total_spikes": 329497,
+          "varying_features": 10005
+        },
+        "disconnected": {
+          "accuracy": 0.375,
+          "total_spikes": 329878,
+          "varying_features": 10005
+        }
+      }
+    },
+    "lamina": {
+      "neurons": 5327,
+      "results": {
+        "intact": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "shuffled": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "disconnected": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        }
+      }
+    },
+    "T4_T5": {
+      "neurons": 13585,
+      "results": {
+        "intact": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "shuffled": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "disconnected": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        }
+      }
+    },
+    "visual_projection": {
+      "neurons": 9201,
+      "results": {
+        "intact": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "shuffled": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "disconnected": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        }
+      }
+    },
+    "descending": {
+      "neurons": 1314,
+      "results": {
+        "intact": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "shuffled": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "disconnected": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        }
+      }
+    }
+  },
+  "full-vision-20260910T131701141382Z": {
+    "retina": {
+      "neurons": 3377,
+      "results": {
+        "intact": {
+          "accuracy": 0.375,
+          "total_spikes": 329878,
+          "varying_features": 10005
+        },
+        "shuffled": {
+          "accuracy": 0.375,
+          "total_spikes": 329497,
+          "varying_features": 10005
+        },
+        "disconnected": {
+          "accuracy": 0.375,
+          "total_spikes": 329878,
+          "varying_features": 10005
+        }
+      }
+    },
+    "lamina": {
+      "neurons": 5327,
+      "results": {
+        "intact": {
+          "accuracy": 0.5,
+          "total_spikes": 697757,
+          "varying_features": 15921
+        },
+        "shuffled": {
+          "accuracy": 0.5,
+          "total_spikes": 697758,
+          "varying_features": 15921
+        },
+        "disconnected": {
+          "accuracy": 0.5,
+          "total_spikes": 697758,
+          "varying_features": 15921
+        }
+      }
+    },
+    "T4_T5": {
+      "neurons": 13585,
+      "results": {
+        "intact": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "shuffled": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        },
+        "disconnected": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        }
+      }
+    },
+    "visual_projection": {
+      "neurons": 9201,
+      "results": {
+        "intact": {
+          "accuracy": 0.375,
+          "total_spikes": 2706,
+          "varying_features": 249
+        },
+        "shuffled": {
+          "accuracy": 0.625,
+          "total_spikes": 2696,
+          "varying_features": 252
+        },
+        "disconnected": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        }
+      }
+    },
+    "descending": {
+      "neurons": 1314,
+      "results": {
+        "intact": {
+          "accuracy": 0.5,
+          "total_spikes": 8299,
+          "varying_features": 577
+        },
+        "shuffled": {
+          "accuracy": 0.5,
+          "total_spikes": 8387,
+          "varying_features": 570
+        },
+        "disconnected": {
+          "accuracy": 0.5,
+          "total_spikes": 0,
+          "varying_features": 0
+        }
+      }
+    }
+  }
+}

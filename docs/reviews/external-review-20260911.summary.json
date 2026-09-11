@@ -1,0 +1,132 @@
+[
+  {
+    "run": "trial-20260911T004153980568Z",
+    "fly": null,
+    "external_start": 524543.2247200831,
+    "frames": 455,
+    "pts_interval_ms": [
+      43.50000000000076,
+      73.00000000000003,
+      80.99999999999952
+    ],
+    "first_lost_after_takeoff": null,
+    "first_lost": null,
+    "tracking_samples": 219,
+    "total_samples": 219,
+    "track_range": [
+      0.0,
+      0.0,
+      -1.4210854715202004e-14,
+      -1.4210854715202004e-14
+    ],
+    "control_gap_ms": []
+  },
+  {
+    "run": "trial-20260911T004228743476Z",
+    "fly": 524585.242662958,
+    "external_start": 524577.971320083,
+    "frames": 412,
+    "pts_interval_ms": [
+      44.00000000000048,
+      74.00000000000074,
+      82.00000000000074
+    ],
+    "first_lost_after_takeoff": 1.4983571250922978,
+    "first_lost": {
+      "elapsed_s": 8.769700000035751,
+      "received_monotonic_s": 524586.7410200831,
+      "media_time_s": 124.53622,
+      "selection_id": 1,
+      "status": "lost",
+      "score": 0.6715381789010649,
+      "box": null,
+      "dx": null,
+      "dy": null
+    },
+    "tracking_samples": 83,
+    "total_samples": 195,
+    "track_range": [
+      0.0,
+      0.0,
+      -8.000000000000014,
+      -1.4210854715202004e-14
+    ],
+    "control_gap_ms": [
+      53.28081245534122,
+      55.272426787996665,
+      63.12312500085682
+    ]
+  },
+  {
+    "run": "trial-20260911T004359297362Z",
+    "fly": 524679.984824,
+    "external_start": 524668.5496200831,
+    "frames": 493,
+    "pts_interval_ms": [
+      33.42699999999965,
+      66.85300000000183,
+      100.27900000000045
+    ],
+    "first_lost_after_takeoff": 1.4559960830956697,
+    "first_lost": {
+      "elapsed_s": 12.891200000023819,
+      "received_monotonic_s": 524681.4408200831,
+      "media_time_s": 219.26377,
+      "selection_id": 2,
+      "status": "lost",
+      "score": 0.6142103413619326,
+      "box": null,
+      "dx": null,
+      "dy": null
+    },
+    "tracking_samples": 123,
+    "total_samples": 234,
+    "track_range": [
+      -44.0,
+      -44.0,
+      20.0,
+      20.0
+    ],
+    "control_gap_ms": [
+      53.674396011047065,
+      55.3601652267389,
+      57.69383301958442
+    ]
+  },
+  {
+    "run": "trial-20260911T004447260405Z",
+    "fly": 524728.215271708,
+    "external_start": 524716.6545200831,
+    "frames": 499,
+    "pts_interval_ms": [
+      43.99999999999996,
+      72.99999999999724,
+      81.99999999999986
+    ],
+    "first_lost_after_takeoff": 1.4588483751285821,
+    "first_lost": {
+      "elapsed_s": 13.019599999988102,
+      "received_monotonic_s": 524729.6741200831,
+      "media_time_s": 267.49478,
+      "selection_id": 3,
+      "status": "lost",
+      "score": 0.736166940673489,
+      "box": null,
+      "dx": null,
+      "dy": null
+    },
+    "tracking_samples": 123,
+    "total_samples": 236,
+    "track_range": [
+      -7.105427357601002e-15,
+      -7.105427357601002e-15,
+      -4.000000000000014,
+      -1.4210854715202004e-14
+    ],
+    "control_gap_ms": [
+      53.59414604026824,
+      55.295825045323,
+      60.11545902583748
+    ]
+  }
+]

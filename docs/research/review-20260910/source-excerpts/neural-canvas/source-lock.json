@@ -1,0 +1,112 @@
+[
+  {
+    "path": "README.md",
+    "url": "https://huggingface.co/spaces/Xenova/fruit-fly-simulation/raw/main/README.md",
+    "sha256": "a40b22bddaddd3c6eca72c089f6bce50a5a5f478642dee6c60ea249e25eb37cc",
+    "bytes": 4485,
+    "excerpt": [
+      "16: A standalone fruit fly connectome demo: paint neurons, stimulate the network, and watch an articulated Three.js fly respond. Vanilla JavaScript, Vite, Three.js, and `@huggingface/kernels`.",
+      "18: Simulated neural activity drives crafted walking, turning, and flight animations. The movements are illustrative, not validated predictions of fly behavior.",
+      "29: Open the address printed by Vite, then click **Download & start**. All neural weights, fly meshes, fonts, and kernel templates are included in `public/`; setup loads them into the browser and caches verified weight chunks. No API key or external model service is required.",
+      "38: Deploy the generated `dist/` directory to any static HTTPS host. Relative asset paths support deployment under a subdirectory. Use Vite or an HTTP server locally; opening `index.html` as a `file://` URL will not work. WebGPU requires HTTPS or localhost; JavaScript provides the compute fallback. Rendering requires WebGL2.",
+      "50: - `public/model.json`: model parameters, provenance, and limitations.",
+      "54: The ZIP includes the editable Vite source and a prebuilt `dist/` directory, ready for static HTTPS hosting. It excludes installed dependencies, deployment configuration, Git history, and development benchmarks. The source and build each include the connectome data so either can be used independently.",
+      "58: The simulation retains 166,700 MaleCNS entries from the brain and nerve cord and 25,582,938 directed connections. Recorded connectivity drives a leaky integrate-and-fire model adapted from Shiu et al. The original model's validation does not validate this transfer to MaleCNS or the demo's movements.",
+      "60: Computed firing rates control speed, turning, and flight. Smooth body trajectories and a crafted tripod gait are mapped onto the measured skeleton with joint-limited inverse kinematics. Movement gains, activation thresholds, and foot trajectories are chosen for the demo. There is no contact, muscle, or aerodynamic simulation, and body motion does not feed sensory signals back into the neural network. The visual body is a female NeuroMechFly specimen.",
+      "62: Walk stimulates bilateral LC9 neurons; turns stimulate same-side LC9 and DNa02; Fly stimulates bilateral LC4. Turning can remain visible with recurrent transmission disabled because DNa02 is directly stimulated. Action targets and pulse envelopes are engineered stimulation choices."
+    ]
+  },
+  {
+    "path": "public/model.json",
+    "url": "https://huggingface.co/spaces/Xenova/fruit-fly-simulation/raw/main/public/model.json",
+    "sha256": "9e11795f76ca67d36117f8ed77396569d15cc06f9cc0d29a5a8869ce85514914",
+    "bytes": 9191,
+    "excerpt": [
+      "4:   \"scope\": \"Official MaleCNS brain and nerve cord connectivity with an adapted spiking model. Computed neural activity drives crafted, illustrative movements; this is not a validated whole-fly emulation.\",",
+      "7:     \"neurons\": 166700,",
+      "8:     \"directedEdges\": 25582938,",
+      "15:     \"identifiers\": \"bodyId is a unique dataset identifier, not a sequential neuron number; 166700 unique records, IDs10001\\u20131471062202.\"",
+      "26:     \"synapseWeightMv\": 0.275,",
+      "39:     \"omittedFastOutputNeurons\": 11068,",
+      "53:         \"directDescendingInput\": true",
+      "60:         \"turnRationale\": \"Direct ipsilateral DNa02 input keeps turn readout active when LC9 recruitment is weak; spikes still pass through the neural model and rate decoder.\"",
+      "65:     \"kind\": \"Crafted animation driven by computed firing rates; no direct brush or preset input\",",
+      "74:     \"walkingGainMmS\": 8,",
+      "75:     \"yawGainRadS\": 3.8,",
+      "78:     \"movement\": \"Smoothed rate-to-speed and rate-to-yaw mapping, authored tripod foot trajectories, joint-limited IK, and a bounded flight/landing controller. No contact, muscle or aerodynamic simulation.\",",
+      "102:       \"scope\": \"Authored bounded flight controller triggered by computed DNp01 rates. Numerical movement gains are illustrative, not fitted physiology.\"",
+      "135:       \"method\": \"Damped Jacobian null-space posture correction around standing pose calibrated once from measured skeleton; foot targets and measured joint limits preserved\",",
+      "144:     \"sparseOperator\": \"Outgoing CSR with 19 sparse delayed spike queues, indirect four-source workgroups and fused integration/event/reset on the kernel runtime GPUDevice\",",
+      "146:     \"decoder\": \"Official MatMul on 18 gathered resident motor-neuron counts (6x18); single readback fence for full counts and motor rates; all six outputs compared to JavaScript each batch\",",
+      "153:   \"limitations\": [",
+      "157:     \"Body mesh comes from a female specimen. Movement gains, activation thresholds, pulse envelopes, gait and flight are authored for the demo, not fitted or validated against animal behavior.\",",
+      "158:     \"Computed spikes drive an illustrative controller rather than individual muscles. Ground contact, aerodynamics and body-to-neural sensory feedback are omitted.\"",
+      "205:       \"composite\": \"Unpremultiply linear scene before tone mapping; composite against encoded gradient after color-space transform\",",
+      "210:       \"initial\": \"Blocking native modal with Download & start; no anatomy or weight download before explicit action\",",
+      "212:       \"recovery\": \"Progress, checked cached weight reuse, asset/worker retry and automatic CPU fallback\",",
+      "216:         \"escapeReadout\": \"Escape drive\""
+    ]
+  },
+  {
+    "path": "src/brain-gpu.js",
+    "url": "https://huggingface.co/spaces/Xenova/fruit-fly-simulation/raw/main/src/brain-gpu.js",
+    "sha256": "81c5ae00cce161ff7b79da28ad2a35e8a16c84b828c8e2b2c9fd8fb66f271527",
+    "bytes": 12094,
+    "excerpt": [
+      "14: /** Resident, spike-driven WGSL backend on the kernel runtime's GPUDevice. */",
+      "27:   buffer(size, usage, data) {",
+      "28:     const buffer = this.device.createBuffer({ size: Math.max(4, size), usage });",
+      "29:     this.buffers.push(buffer);",
+      "30:     if (data) this.device.queue.writeBuffer(buffer, 0, data);",
+      "31:     return buffer;",
+      "61:       bytes > this.device.limits.maxStorageBufferBindingSize ||",
+      "62:       this.edges * 4 > this.device.limits.maxStorageBufferBindingSize",
+      "69:     this.buffers = [];",
+      "79:     const storage = GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST;",
+      "81:     this.graph = this.buffer(bytes, storage);",
+      "82:     device.queue.writeBuffer(this.graph, 0, outgoing.offsets);",
+      "83:     device.queue.writeBuffer(this.graph, (this.n + 1) * 4, graph.sign);",
+      "84:     device.queue.writeBuffer(this.graph, (2 * this.n + 1) * 4, outgoing.targets);",
+      "85:     this.edgeCounts = this.buffer(this.edges * 4, storage, outgoing.counts);",
+      "86:     this.state = this.buffer(this.n * 16, storage | GPUBufferUsage.COPY_SRC);",
+      "87:     // N entries per slot covers even a simultaneous spike from every neuron.",
+      "88:     this.history = this.buffer((19 + this.n * 19) * 4, storage);",
+      "89:     this.indirect = this.buffer(19 * 12, storage | GPUBufferUsage.INDIRECT);",
+      "90:     this.rates = this.buffer(this.n * 4, storage);",
+      "92:     this.counts = this.countTensor.buffer;",
+      "93:     this.currents = this.buffer(this.n * 4, storage);",
+      "94:     this.read = this.buffer(",
+      "96:       GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,",
+      "98:     this.uniform = this.buffer("
+    ]
+  },
+  {
+    "path": "src/controller.js",
+    "url": "https://huggingface.co/spaces/Xenova/fruit-fly-simulation/raw/main/src/controller.js",
+    "sha256": "591d0bac71181236ccf84b741cf43916ca4a8a27e4ca48606ce8cbd97f282a19",
+    "bytes": 5735,
+    "excerpt": []
+  },
+  {
+    "path": "src/propagate-sparse.wgsl",
+    "url": "https://huggingface.co/spaces/Xenova/fruit-fly-simulation/raw/main/src/propagate-sparse.wgsl",
+    "sha256": "f1ebdeebfdc9cc88140a848fb3a7a3c0692aa49079a96fab5fca7113967e0197",
+    "bytes": 3330,
+    "excerpt": [
+      "18: // Only advance binds this buffer as storage. Propagate uses it as INDIRECT.",
+      "19: @group(1) @binding(0) var<storage, read_write> indirect: array<atomic<u32>>;",
+      "40:     let destinationNeuron = graph[2u * p.n + 1u + e];",
+      "41:     if (p.tick >= states[destinationNeuron].until) {",
+      "42:       atomicAdd(&currents[destinationNeuron], i32(synapses[e]) * sign);",
+      "56:     atomicStore(&indirect[next * 3u], 0u);",
+      "83:     // spikes. Cells with no outgoing transmission still retain visible counts.",
+      "88:       atomicMax(&indirect[slot * 3u], (position + 4u) / 4u);"
+    ]
+  },
+  {
+    "path": "LICENSE",
+    "url": "https://huggingface.co/spaces/Xenova/fruit-fly-simulation/raw/main/LICENSE",
+    "sha256": "ea115798b167e6c995a322a3c9bb714f410df3a2ab49dcba166941ee347907bf",
+    "bytes": 1377
+  }
+]

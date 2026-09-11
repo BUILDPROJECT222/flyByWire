@@ -1,0 +1,44 @@
+# OS / editor
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / UI
+ui/node_modules/
+ui/.next/
+ui/dist/
+ui/.vinext/
+ui/.wrangler/
+ui/.openai/
+ui/tsconfig.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+
+# Lab runtime
+.lab-logs/
+.drone-control.lock
+
+# Local heavy data (keep README + small metadata)
+data/malecns/*
+!data/malecns/visual-circuit.json
+!data/malecns/benchmark-full-csr.json
+
+# Local captures & run outputs (kept on disk, not in git)
+recordings/
+diagnostics/
+experiments/
+
+# Benchmark scratch logs
+docs/benchmarks/run.log
+docs/benchmarks/resources.log

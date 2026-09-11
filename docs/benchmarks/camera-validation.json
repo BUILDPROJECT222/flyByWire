@@ -1,0 +1,58 @@
+{
+  "scenes": {
+    "texture": {
+      "correct": 20,
+      "clips": 40,
+      "accuracy": 0.5,
+      "phase_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "pixel_baseline_accuracy": 1.0
+    },
+    "on_edge": {
+      "correct": 20,
+      "clips": 40,
+      "accuracy": 0.5,
+      "phase_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "pixel_baseline_accuracy": 1.0
+    },
+    "off_edge": {
+      "correct": 17,
+      "clips": 40,
+      "accuracy": 0.425,
+      "phase_bootstrap_95": [
+        0.35,
+        0.5
+      ],
+      "pixel_baseline_accuracy": 1.0
+    },
+    "stationary": {
+      "clips": 20,
+      "forced_horizontal_outputs": 20,
+      "note": "Binary decoder has no stationary/looming/unknown category; these outputs are not validated motion detections."
+    },
+    "looming": {
+      "clips": 20,
+      "forced_horizontal_outputs": 20,
+      "note": "Binary decoder has no stationary/looming/unknown category; these outputs are not validated motion detections."
+    }
+  },
+  "continuous_accuracy": 0.5,
+  "recording_frames": 123,
+  "readiness": "generalization_failed",
+  "latency": {
+    "compute_p95_ms": 50.215589557774365,
+    "receipt_p95_ms": 74.81926860928068,
+    "history_p95_ms": 1297.2199000185356,
+    "skipped_frames": 14,
+    "processed_frames": 270
+  },
+  "evidence": {
+    "scenes": "experiments/scene-validation-20260910T140646337963Z/report.json",
+    "latency": "experiments/replay-latency-20260910T141301277592Z/report.json"
+  }
+}

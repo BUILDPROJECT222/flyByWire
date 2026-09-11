@@ -1,0 +1,31 @@
+{
+  "frames": 2849,
+  "duration_s": 284.9,
+  "control_gap_ms": [
+    53.914249991066754,
+    55.28972703614272,
+    63.119666010607034
+  ],
+  "frame_gap_ms": [
+    107.51037497539073,
+    125.00220001675187,
+    346.1398750077933
+  ],
+  "compute_ms": [
+    33.98499998729676,
+    48.98534996900704,
+    331.3099590013735
+  ],
+  "receipt_age_ms": [
+    50.94424998969771,
+    72.53915891924407,
+    351.8432910204865
+  ],
+  "estop_packets": 0,
+  "operator_report": {
+    "same_battery_all_runs": true,
+    "one_fall_after_landing_from_table": true,
+    "incident_clip_assignment": "Likely trial-20260910T235705350382Z; inferred from footage, not identified by operator"
+  },
+  "network_rx_max_gap_s": 0.11012775002745911
+}
