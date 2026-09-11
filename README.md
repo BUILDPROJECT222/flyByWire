@@ -123,6 +123,9 @@ Details: `docs/reviews/flight-review-20260911.md`.
 
 ## Brain & research
 
+See [What the fly brain does / training notes](docs/BRAIN_AND_TRAINING.md).
+
+
 - Full annotated MaleCNS: 166,700 neurons · 25,582,938 connections · Metal/WebGPU.
 - Approximate dynamics (not a biological mind). License notes in `lab/licenses/`.
 - Graded model powers the default workspace; spiking viewer lives under Research tools.
