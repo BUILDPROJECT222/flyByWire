@@ -151,7 +151,7 @@ async def lifespan(app):
     lab.shutdown.set(); lab.cancel.set(); lab.stop_live()
     if full_instance is not None: full_instance.stop.set(); full_instance.thread.join(timeout=5)
     if workspace_instance is not None: workspace_instance.close()
-app=FastAPI(title='Fly / Flight local lab',lifespan=lifespan)
+app=FastAPI(title='flyByWire local lab',lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware,allowed_hosts=['127.0.0.1','localhost','testserver'])
 app.add_middleware(CORSMiddleware,allow_origin_regex=r'http://(127\.0\.0\.1|localhost)(:\d+)?',allow_methods=['GET','POST'],allow_headers=['Content-Type'])
 @app.middleware('http')

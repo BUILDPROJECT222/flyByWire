@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Fly / Flight — Local Connectome Lab',
+  title: 'flyByWire',
   description:
-    'Camera-driven MaleCNS connectome lab with supervised Wi-Fi UFO drone controls. Brain is observation only.',
+    'flyByWire — camera-driven MaleCNS connectome lab with supervised Wi-Fi UFO drone controls. Brain is observation only.',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },

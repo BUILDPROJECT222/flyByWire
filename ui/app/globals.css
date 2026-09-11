@@ -1087,3 +1087,9 @@ a {
  .workspace-home .workspace-stage { grid-template-columns: 1fr; }
  .workspace-home .external-surface, .workspace-home .camera-surface, .workspace-home .workspace-brain .full-canvas-wrap { height: 300px; flex: none; }
 }
+
+
+.workspace-brand .brand-by,
+.brand h1 .brand-by {
+  color: #3dd68c;
+}

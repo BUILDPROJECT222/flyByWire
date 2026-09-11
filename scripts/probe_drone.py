@@ -36,7 +36,7 @@ def main():
             report["rtsp_port_open"] = True
             sock.settimeout(3)
             sock.sendall((f"OPTIONS rtsp://{args.host}:7070/webcam RTSP/1.0\r\n"
-                          "CSeq: 1\r\nUser-Agent: droneControl-probe\r\n\r\n").encode())
+                          "CSeq: 1\r\nUser-Agent: flyByWire-probe\r\n\r\n").encode())
             report["rtsp_options"] = sock.recv(8192).decode(errors="replace")
     except OSError as exc:
         report["rtsp_error"] = str(exc)

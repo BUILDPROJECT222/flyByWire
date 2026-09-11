@@ -24,7 +24,7 @@ cleanup() {
 }
 trap cleanup EXIT
 trap 'exit 0' INT TERM
-echo 'Fly / Flight: http://localhost:3000/'
+echo 'flyByWire: http://localhost:3000/'
 echo 'Brain observation + explicit supervised flight controls. Ctrl-C requests landing before shutdown.'
 echo 'Logs: .lab-logs/worker.log and .lab-logs/ui.log'
 while kill -0 "$worker_pid" 2>/dev/null && kill -0 "$ui_pid" 2>/dev/null; do sleep 1; done

@@ -73,7 +73,7 @@ export function WorkspaceNav({
     <>
       <header className="workspace-header">
         <Link className="workspace-brand" href="/">
-          Fly <span>/</span> Flight
+          fly<span className="brand-by">By</span>Wire
         </Link>
         <nav aria-label="Main navigation">
           <Link href="/" aria-current={!diagnostics ? 'page' : undefined}>

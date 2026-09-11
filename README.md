@@ -1,4 +1,4 @@
-# flyByWire — Fly / Flight
+# flyByWire
 
 **In plain terms:** this is a Mac app that shows a cheap Wi-Fi toy drone’s camera next to a live map of a real fruit fly’s brain. As the camera moves, parts of that brain light up. You can take off and land with big supervised controls (and a red E-STOP), but the brain only *watches* — it does not steer the drone yet. The long-term question is whether a real fly wiring diagram helps a small aircraft explore a room better than a made-up network of the same size.
 
