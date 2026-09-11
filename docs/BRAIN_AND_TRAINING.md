@@ -57,3 +57,24 @@ Same compact CES job (`lab.train`, 6 generations, seed 7) and (on Mac) graded fu
 Compact CES is CPU-bound on the small visual subgraph; the M3 finished ~1.72× faster than the box Xeon VM here. Full-graph training/feature extraction for recordings belongs on the Mac’s Metal path (~16 ms per integration burst).
 
 Reports: `experiments/bench-train-macbook-m3-20260911T015010/report.json`, `experiments/bench-train-box-xeon-20260911T015041/report.json`, `experiments/recording-train-20260911T015021606924Z/report.json`.
+
+
+## Brain yaw assist (2026-09-11)
+
+Trial profile `brain-yaw-assist-v2` lets the workspace motion score bias **yaw only**, with a deadzone and hard clamp (±6 protocol units). The UDP control process still owns every motor packet and never loads MaleCNS; assist rides shared memory from the observer thread.
+
+Default offline webpage video is `recordings/demo-default.mp4` (copy of the strong `trial-20260911T004359…` onboard flight). Active readout weights: `experiments/active-quadratic-T4_T5.npz` (refreshed by `python3 -m lab.train_from_recordings`).
+
+Retrain mixes synthetic clips, onboard `image_motion` windows, and external `*.retrack.json` dx signs when available.
+
+### Retrain with flight + retrack (2026-09-11 evening)
+
+Script: `lab/train_from_recordings.py`  
+Active weights: `experiments/active-quadratic-T4_T5.npz`  
+Run: `experiments/recording-train-20260911T020819752244Z`
+
+- Mixed model recording held-out accuracy: **0.70** (was ~0.38 earlier today)
+- Synthetic test: **0.85**
+- Windows: 38 onboard `image_motion` + 4 external retrack-dx (strict); synthetic 72 train / 48 test
+- Offline demo video: `data/demo-default.mp4` (onboard from trial `20260911T004359…`)
+- Control: trial profile `brain-yaw-assist-v2` applies clamped yaw bias (±6) from motion score via shared memory; UDP process still never loads MaleCNS

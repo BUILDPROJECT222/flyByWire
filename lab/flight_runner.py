@@ -1,7 +1,9 @@
-"""Supervised TC trials. A separate process owns UDP; the brain never sends controls.
+"""Supervised TC trials. A separate process owns UDP and never loads the connectome.
 
-The process watches independently refreshed browser/video leases. Record RGB frames
-from the workspace's sole RTSP decoder, never open a second camera connection.
+Optional brain-yaw-assist-v2 applies a clamped yaw bias from the workspace motion
+score via shared memory. The process watches independently refreshed browser/video
+leases. Record RGB frames from the workspace's sole RTSP decoder, never open a
+second camera connection.
 """
 import json
 import hashlib
@@ -39,6 +41,8 @@ TRIALS = {
     'roll-plus-v2': ('Roll +', 6., 0, 4),
     'pitch-minus-v2': ('Pitch −', 6., 1, -4),
     'pitch-plus-v2': ('Pitch +', 6., 1, 4),
+    # Clamped yaw bias from workspace motion score; UDP process never loads the brain.
+    'brain-yaw-assist-v2': ('Brain yaw assist · 8 s', 8., 3, 0),
 }
 # Old profiles remain only for regression tests and historical log interpretation.
 PROFILES.update(TRIALS)
@@ -69,7 +73,7 @@ class Sequencer:
     def transition(self, phase, now, reason):
         self.phase, self.since, self.reason = phase, now, reason
 
-    def tick(self, now, *, ready=False, start=False, land=False, estop=False, fault=None, stable=False):
+    def tick(self, now, *, ready=False, start=False, land=False, estop=False, fault=None, stable=False, assist_yaw=0):
         if self.phase == 'done':
             return None
         if estop and self.phase != 'estop':
@@ -90,6 +94,20 @@ class Sequencer:
             self.stage = 'Stationary capture · no motor packets'
             if elapsed >= 10: self.transition('done', now, 'Stationary recording complete')
             return None
+        if self.phase == 'flying' and self.profile_id == 'brain-yaw-assist-v2':
+            if elapsed < 3:
+                self.stage = 'Takeoff / settle'
+                return packet(1 if elapsed < .15 else 0)
+            if elapsed >= self.profile[1]:
+                self.transition('landing', now, 'Assist window complete')
+                return packet(2)
+            self.stage = 'Brain yaw assist'
+            try:
+                offset = int(assist_yaw)
+            except (TypeError, ValueError):
+                offset = 0
+            offset = max(-6, min(6, offset))
+            return packet(0, 3, offset) if offset else packet(0)
         if self.phase == 'flying' and self.profile_id in TRIALS:
             self.stage = 'Takeoff / settle' if elapsed < 3 else 'Observe'
             if self.profile[2] is not None:
@@ -199,7 +217,7 @@ def control_process(out, profile, shared, frames, updates, address, check_route,
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.connect(address)
         sock.setblocking(False)
-        log('session', profile=profile, local_address=sock.getsockname(), brain_controls=False,
+        log('session', profile=profile, local_address=sock.getsockname(), brain_controls=(profile=='brain-yaw-assist-v2'),
             rotation='90 degrees clockwise upstream', video_fps=10, emergency_only=emergency_only)
         if not emergency_only:
             recorder_log = (out / 'ffmpeg.log').open('w')
@@ -245,9 +263,10 @@ def control_process(out, profile, shared, frames, updates, address, check_route,
                 elif machine.phase in ('ready', 'flying', 'recording') and now - last_rx >= 1.5: fault = 'TC replies stopped'
                 elif machine.phase == 'preparing' and now - started > 15: fault = 'Preflight timed out; no takeoff sent'
                 elif machine.phase == 'ready' and now - machine.since > 30: fault = 'Takeoff window expired'
+            assist = float(shared['assist_yaw'].value) if 'assist_yaw' in shared else 0.
             payload = machine.tick(now, ready=ready, start=bool(shared['start'].value),
                 land=bool(shared['land'].value), estop=bool(shared['estop'].value) or emergency_only, fault=fault,
-                stable=bool(shared.get('stable') and shared['stable'].value))
+                stable=bool(shared.get('stable') and shared['stable'].value), assist_yaw=assist)
             if payload is not None and not send(payload) and machine.phase == 'flying':
                 machine.transition('landing', now, 'Control send failed')
             if machine.phase != prior_phase:
@@ -361,7 +380,7 @@ class FlightRunner:
                     raise ValueError('Record two clean, stable baselines before steering trials')
                 status = workspace.feed.status()
                 if status['source'] != 'live' or not status['fresh']: raise ValueError('Fresh live video required; replay cannot arm')
-            self.shared = {key:self.ctx.Value('d', 0, lock=False) for key in ('video', 'lease', 'start', 'land', 'estop', 'record_fault', 'capture_done', 'stable')}
+            self.shared = {key:self.ctx.Value('d', 0, lock=False) for key in ('video', 'lease', 'start', 'land', 'estop', 'record_fault', 'capture_done', 'stable', 'assist_yaw')}
             self.shared['lease'].value = time.monotonic()
             self.shared['video'].value = workspace.feed.snapshot()[4] if workspace else 0
             self.frames = self.ctx.Queue(maxsize=12)
@@ -398,8 +417,11 @@ class FlightRunner:
             with (out / 'observer.jsonl').open('w', buffering=1) as log:
                 from .workspace import CHECKPOINT
                 checkpoint_hash = hashlib.sha256(CHECKPOINT.read_bytes()).hexdigest()
+                assist_on = self.current.get('profile') == 'brain-yaw-assist-v2'
                 log.write(json.dumps(dict(event='model', checkpoint=str(CHECKPOINT), checkpoint_sha256=checkpoint_hash,
-                    motor_authority=False, units='graded response; not spikes')) + '\n')
+                    motor_authority=assist_on, assist='clamped yaw bias from motion score' if assist_on else None,
+                    units='graded response; not spikes')) + '\n')
+                from .brain_assist import score_to_yaw
                 while self.process.is_alive() and not self.shared['capture_done'].value:
                     rgb, _, new_seq, new_epoch, received = workspace.feed.snapshot()
                     status = workspace.feed.status()
@@ -414,9 +436,18 @@ class FlightRunner:
                             log.write(json.dumps(dict(event='dropped_recording_frame', sequence=seq, monotonic_s=time.monotonic())) + '\n')
                     with workspace.lock:
                         frame = {k:v for k,v in workspace.frame.items() if k != 'activity'}
+                    if assist_on:
+                        motion = frame.get('motion') or {}
+                        yaw = score_to_yaw(motion.get('score') if isinstance(motion, dict) else None)
+                        self.shared['assist_yaw'].value = float(yaw)
+                    else:
+                        self.shared['assist_yaw'].value = 0.
                     if frame['inference_sequence'] != last_inference:
                         last_inference = frame['inference_sequence']
-                        log.write(json.dumps(dict(event='brain_observer', monotonic_s=time.monotonic(), **frame)) + '\n')
+                        payload = dict(event='brain_observer', monotonic_s=time.monotonic(), **frame)
+                        if assist_on:
+                            payload['assist_yaw'] = int(self.shared['assist_yaw'].value)
+                        log.write(json.dumps(payload) + '\n')
                     time.sleep(.02)
         finally:
             self.shared['video'].value = 0

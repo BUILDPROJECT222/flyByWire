@@ -128,7 +128,7 @@ export default function Home() {
                 <Camera size={32} />
                 <p>Waiting for video</p>
                 <span>
-                  Connect the Mac’s Wi-Fi to the drone, or use the recording.
+                  Connect the Mac’s Wi-Fi to the drone, or watch the demo flight replay.
                 </span>
               </div>
             )}

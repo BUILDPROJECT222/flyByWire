@@ -7,8 +7,12 @@ import numpy as np
 from PIL import Image
 from .core import ROOT,DATA
 
-RECORDING=ROOT/'recordings/20260909T192201Z/takeoff-land.mp4'
-CHECKPOINT=ROOT/'experiments/visual-fit-20260910T133833056081Z/quadratic-0-T4_T5.npz'
+RECORDING=ROOT/'data/demo-default.mp4'
+CHECKPOINT=ROOT/'experiments/active-quadratic-T4_T5.npz'
+# Fallback if active checkpoint missing (first boot / fresh clone)
+_LEGACY_CHECKPOINT=ROOT/'experiments/visual-fit-20260910T133833056081Z/quadratic-0-T4_T5.npz'
+if not CHECKPOINT.exists() and _LEGACY_CHECKPOINT.exists():
+    CHECKPOINT=_LEGACY_CHECKPOINT
 
 class CameraFeed:
     def __init__(self):

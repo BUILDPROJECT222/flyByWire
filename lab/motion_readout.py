@@ -1,5 +1,5 @@
 """Frozen quadratic decoder for 12 frame-boundary T4/T5 activity samples.
-Direction scores are uncalibrated. Outputs are observations, not flight commands.
+Direction scores are uncalibrated. Workspace may expose them for a clamped yaw-assist bias; the UDP control process still owns motors and never loads the connectome.
 """
 from collections import deque
 import numpy as np
