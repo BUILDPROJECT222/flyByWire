@@ -7,7 +7,7 @@ import {
   type GrayFrame,
   type Track,
 } from '@/lib/external-tracker';
-const API = 'http://127.0.0.1:8766';
+import { WORKER as API } from '@/lib/worker';
 type Sample = {
   elapsed_s: number;
   received_monotonic_s: number;

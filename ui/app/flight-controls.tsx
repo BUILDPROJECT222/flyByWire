@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
-const API = 'http://127.0.0.1:8766';
+import { WORKER as API } from '@/lib/worker';
 type Flight = {
   phase: string;
   reason: string;

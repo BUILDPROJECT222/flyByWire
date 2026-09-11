@@ -13,6 +13,7 @@ import {
   Video,
 } from 'lucide-react';
 import { BrainCanvas } from './full-brain';
+import { CommunitySection } from './community-section';
 import { ExternalCamera } from './external-camera';
 import {
   CameraPicture,
@@ -225,6 +226,7 @@ export default function Home() {
           <Link href="/diagnostics">View diagnostics →</Link>
         </div>
       </section>
+      <CommunitySection />
       {state?.error && (
         <div role="alert" className="workspace-error">
           Video remains available. Brain: {state.error}

@@ -1,7 +1,7 @@
 """Camera-first workspace. Observes video and runs experimental graded inference.
 No UDP control socket or motor command path.
 """
-import io,json,selectors,socket,subprocess,threading,time
+import io,json,os,queue,socket,subprocess,threading,time
 from collections import deque
 import numpy as np
 from PIL import Image
@@ -13,6 +13,15 @@ CHECKPOINT=ROOT/'experiments/active-quadratic-T4_T5.npz'
 _LEGACY_CHECKPOINT=ROOT/'experiments/visual-fit-20260910T133833056081Z/quadratic-0-T4_T5.npz'
 if not CHECKPOINT.exists() and _LEGACY_CHECKPOINT.exists():
     CHECKPOINT=_LEGACY_CHECKPOINT
+# Hosted demos pause inference when nobody has polled for this many seconds (0 = never).
+IDLE_AFTER_S=float(os.environ.get('FLYBYWIRE_IDLE_AFTER_S','0'))
+
+def _pump(stream,chunks):
+    # Windows select() only accepts sockets, so pipe reads happen on a thread.
+    try:
+        while raw:=stream.read(65536):chunks.put(raw)
+    except (OSError,ValueError):pass
+    chunks.put(b'')
 
 class CameraFeed:
     def __init__(self):
@@ -56,10 +65,11 @@ class CameraFeed:
             if live:args+=['-rtsp_transport','udp','-timeout','3000000','-i','rtsp://192.168.1.1:7070/webcam','-vf','transpose=clock,fps=10,scale=320:240']
             else:args+=['-re','-i',str(RECORDING),'-vf','fps=10,scale=320:240']
             args+=['-pix_fmt','rgb24','-f','rawvideo','pipe:1']
-            p=None;selector=None
+            p=None
             try:
                 p=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,bufsize=0)
-                self.process=p;selector=selectors.DefaultSelector();selector.register(p.stdout,selectors.EVENT_READ)
+                self.process=p;chunks=queue.Queue()
+                threading.Thread(target=_pump,args=(p.stdout,chunks),daemon=True).start()
                 pending=bytearray();deadline=time.monotonic()+5
                 with self.lock:self.epoch+=1;self.times.clear()
                 while not self.stop.is_set() and p.poll() is None:
@@ -68,8 +78,8 @@ class CameraFeed:
                         next_probe=time.monotonic()+15
                         if self.reachable():break
                     if time.monotonic()>deadline:raise TimeoutError('Video frames stopped arriving')
-                    if not selector.select(.2):continue
-                    raw=p.stdout.read(65536)
+                    try:raw=chunks.get(timeout=.2)
+                    except queue.Empty:continue
                     if not raw:break
                     pending.extend(raw)
                     while len(pending)>=320*240*3:
@@ -87,7 +97,6 @@ class CameraFeed:
             except Exception as exc:
                 with self.lock:self.last_live_error=str(exc)
             finally:
-                if selector:selector.close()
                 if p:
                     if p.poll() is None:p.terminate()
                     try:p.wait(timeout=2)
@@ -106,11 +115,13 @@ class Workspace:
     def __init__(self):
         self.feed=CameraFeed();self.stop=threading.Event();self.lock=threading.Lock()
         self.running=True;self.reset_requested=True;self.nodes=[];self.completed_at=None;self.telemetry=deque(maxlen=1000)
+        self.polled=time.monotonic()
         self.frame=dict(ready=False,status='Loading brain',error=None,activity=[],motion=None,model_ms=0,
                         compute_ms=0,inference_sequence=0,source_age_ms=None,processed_frames=0,skipped_frames=0,history_span_ms=None)
         self.thread=threading.Thread(target=self.loop,daemon=True);self.thread.start()
     def state(self):
         with self.lock:
+            self.polled=time.monotonic()
             result=dict(self.frame,running=self.running)
             result['result_age_ms']=(time.monotonic()-self.completed_at)*1000 if self.completed_at is not None and self.frame['status']=='Observing' else None
             result['observed_input_age_ms']=(result['source_age_ms']+result['result_age_ms']) if result['result_age_ms'] is not None else None
@@ -131,6 +142,8 @@ class Workspace:
             with self.lock:self.frame.update(ready=True,manifest=meta['manifest'],adapter=dict(engine.adapter.info),status='Waiting for video')
             seen=0;epoch=-1;previous=None;previous_time=None;input_times=deque(maxlen=12)
             while not self.stop.is_set():
+                if IDLE_AFTER_S and time.monotonic()-self.polled>IDLE_AFTER_S:
+                    self.stop.wait(.25);continue
                 rgb,_,seq,new_epoch,last=self.feed.snapshot()
                 with self.lock:running=self.running;reset=self.reset_requested;self.reset_requested=False
                 if reset or epoch!=new_epoch:

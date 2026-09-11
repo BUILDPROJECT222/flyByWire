@@ -1,6 +1,8 @@
 """Loopback-only lab with an explicit, supervised flight API; brain outputs are observational."""
 import io
 import json
+import os
+import re
 import subprocess
 import threading
 import time
@@ -152,13 +154,17 @@ async def lifespan(app):
     if full_instance is not None: full_instance.stop.set(); full_instance.thread.join(timeout=5)
     if workspace_instance is not None: workspace_instance.close()
 app=FastAPI(title='flyByWire local lab',lifespan=lifespan)
-app.add_middleware(TrustedHostMiddleware,allowed_hosts=['127.0.0.1','localhost','testserver'])
-app.add_middleware(CORSMiddleware,allow_origin_regex=r'http://(127\.0\.0\.1|localhost)(:\d+)?',allow_methods=['GET','POST'],allow_headers=['Content-Type'])
+# A hosted demo (e.g. Railway) serves one public domain and never drives hardware.
+PUBLIC_HOST=os.environ.get('FLYBYWIRE_PUBLIC_HOST') or os.environ.get('RAILWAY_PUBLIC_DOMAIN') or ''
+HOSTED=bool(PUBLIC_HOST)
+LOCAL_ORIGINS=r'http://(127\.0\.0\.1|localhost)(:\d+)?'
+ALLOWED_ORIGINS=LOCAL_ORIGINS+('|https://'+re.escape(PUBLIC_HOST) if HOSTED else '')
+app.add_middleware(TrustedHostMiddleware,allowed_hosts=['127.0.0.1','localhost','testserver']+([PUBLIC_HOST] if HOSTED else []))
+app.add_middleware(CORSMiddleware,allow_origin_regex=ALLOWED_ORIGINS,allow_methods=['GET','POST'],allow_headers=['Content-Type'])
 @app.middleware('http')
 async def origin_guard(request:Request,call_next):
-    import re
     origin=request.headers.get('origin')
-    if request.method=='POST' and origin and not re.fullmatch(r'http://(127\.0\.0\.1|localhost)(:\d+)?',origin):
+    if request.method=='POST' and origin and not re.fullmatch(ALLOWED_ORIGINS,origin):
         return Response('Local origins only',status_code=403)
     return await call_next(request)
 @app.get('/api/state')
@@ -175,6 +181,7 @@ class Command(BaseModel):
     generations:int=Field(default=8,ge=1,le=40)
 @app.post('/api/command')
 def command(c:Command):
+    if HOSTED and c.action in ['train','compare']: raise HTTPException(403,'Experiments are disabled on the hosted demo')
     try:
         with lab.lock:
             if c.action=='run': lab.running=True; lab.status='running'
@@ -300,6 +307,7 @@ class FlightCommand(BaseModel):
 def flight_state(): return flight.state()
 @app.post('/api/flight/command')
 def flight_command(c:FlightCommand):
+    if HOSTED: raise HTTPException(403,'Flight is disabled on the hosted demo')
     try:
         if c.action=='prepare':
             if c.profile not in PROFILES: raise ValueError('Unknown bounded test')

@@ -12,7 +12,8 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { Play, Pause, RotateCcw, SkipForward, Zap } from 'lucide-react';
-const API = 'http://127.0.0.1:8766/api/full';
+import { WORKER } from '@/lib/worker';
+const API = WORKER + '/api/full';
 type Frame = {
   ready: boolean;
   status: string;

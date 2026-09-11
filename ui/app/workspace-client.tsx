@@ -4,7 +4,8 @@
 import Link from 'next/link';
 import { FlightControls } from './flight-controls';
 import { useEffect, useState } from 'react';
-export const WORKER = 'http://127.0.0.1:8766';
+import { WORKER } from '@/lib/worker';
+export { WORKER };
 export type WorkspaceState = {
   ready: boolean;
   running: boolean;

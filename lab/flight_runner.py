@@ -7,7 +7,11 @@ second camera connection.
 """
 import json
 import hashlib
-import fcntl
+try:
+    import fcntl
+except ImportError:  # Windows: fall back to msvcrt byte-range locks.
+    fcntl = None
+    import msvcrt
 import multiprocessing as mp
 import queue
 import secrets
@@ -207,8 +211,10 @@ def control_process(out, profile, shared, frames, updates, address, check_route,
     try:
         if lock_path is not None:
             control_lock = open(lock_path, 'a')
-            try: fcntl.flock(control_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except BlockingIOError: raise RuntimeError('Another process owns drone control')
+            try:
+                if fcntl: fcntl.flock(control_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                else: control_lock.seek(0); msvcrt.locking(control_lock.fileno(), msvcrt.LK_NBLCK, 1)
+            except (BlockingIOError, PermissionError): raise RuntimeError('Another process owns drone control')
         if check_route:
             route = subprocess.run(['/sbin/route', '-n', 'get', HOST], capture_output=True, text=True, timeout=3)
             log('route', output=route.stdout)

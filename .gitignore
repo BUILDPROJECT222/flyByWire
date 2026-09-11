@@ -37,7 +37,9 @@ data/malecns/*
 # Local captures & run outputs (kept on disk, not in git)
 /recordings/
 /diagnostics/
-/experiments/
+/experiments/*
+# Active motion readout, needed by hosted deploys (see Dockerfile).
+!/experiments/active-quadratic-T4_T5.npz
 
 # Benchmark scratch logs
 docs/benchmarks/run.log

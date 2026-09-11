@@ -1,0 +1,16 @@
+.git
+.claude
+.venv
+.lab-logs
+ui/node_modules
+ui/dist
+ui/.vinext
+ui/.wrangler
+ui/.openai
+data/malecns/*
+!data/malecns/visual-circuit.json
+!data/malecns/benchmark-full-csr.json
+recordings
+diagnostics
+experiments
+!experiments/active-quadratic-T4_T5.npz

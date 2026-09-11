@@ -27,7 +27,7 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-const API = 'http://127.0.0.1:8766';
+import { WORKER as API } from '@/lib/worker';
 const COLORS: Record<string, string> = {
   retina: '#efc36f',
   lamina: '#85d8ef',

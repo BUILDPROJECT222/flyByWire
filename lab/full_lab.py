@@ -1,16 +1,22 @@
 """Full-brain experiment worker; no motor outputs. GPU commands stay on its thread."""
-import json,threading,time
+import json,os,threading,time
 from queue import Queue,Empty
 import numpy as np
 from .core import DATA
+
+# Hosted demos pause the spiking engine when nobody has polled for this many seconds (0 = never).
+IDLE_AFTER_S=float(os.environ.get('FLYBYWIRE_IDLE_AFTER_S','0'))
 
 class FullLab:
     def __init__(self):
         self.lock=threading.Lock();self.commands=Queue();self.stop=threading.Event();self.engine=None;self.nodes=[]
         self.frame=dict(status='loading full graph',ready=False,running=False,spikes=[],trace=[],model_ms=0,frame=0,error=None)
+        self.polled=time.monotonic()
         self.thread=threading.Thread(target=self.loop,daemon=True);self.thread.start()
     def state(self):
-        with self.lock:return dict(self.frame)
+        with self.lock:
+            self.polled=time.monotonic()
+            return dict(self.frame)
     def send(self,command):self.commands.put(command)
     def loop(self):
         try:
@@ -36,7 +42,8 @@ class FullLab:
                         preset=c['preset'];selection=presets[preset];hz=c['hz']
                     elif c['action']=='neuron':preset='selected neuron';selection=np.array([c['index']]);hz=c['hz']
                     elif c['action']=='recurrence':recurrent=c['enabled']
-                if running or single:
+                idle=IDLE_AFTER_S and time.monotonic()-self.polled>IDLE_AFTER_S
+                if (running and not idle) or single:
                     rates=np.zeros(len(self.nodes),np.float32);rates[selection]=hz
                     start=time.perf_counter();counts=self.engine.batch(rates,recurrent=recurrent);elapsed=time.perf_counter()-start
                     active=np.flatnonzero(counts);sequence+=1

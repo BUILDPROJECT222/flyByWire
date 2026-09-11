@@ -961,6 +961,59 @@ a {
   overflow-wrap: anywhere;
   font-family: monospace;
 }
+.community-section {
+  padding: 8px 4px 10px;
+}
+.community-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.community-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  color: inherit;
+  text-decoration: none;
+}
+a.community-card:hover {
+  border-color: #596f3e;
+}
+a.community-card:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.community-card > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.community-card strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 550;
+}
+.community-card small {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #8fa49c;
+}
+.community-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border: 1px solid #293537;
+  border-radius: 8px;
+  color: #dcf2c4;
+  background: #0b1112;
+}
+.community-arrow {
+  color: #c6e8a5;
+  font-size: 18px;
+}
 @media (max-width: 1000px) {
   .camera-surface,
   .workspace-brain .full-canvas-wrap {
@@ -976,7 +1029,8 @@ a {
 @media (max-width: 760px) {
   .workspace-stage,
   .diagnostic-grid,
-  .workspace-bottom {
+  .workspace-bottom,
+  .community-grid {
     grid-template-columns: 1fr;
   }
   .workspace-header {
