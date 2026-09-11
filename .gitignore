@@ -35,9 +35,9 @@ data/malecns/*
 !data/malecns/benchmark-full-csr.json
 
 # Local captures & run outputs (kept on disk, not in git)
-recordings/
-diagnostics/
-experiments/
+/recordings/
+/diagnostics/
+/experiments/
 
 # Benchmark scratch logs
 docs/benchmarks/run.log
