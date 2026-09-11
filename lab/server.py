@@ -154,12 +154,13 @@ async def lifespan(app):
     if full_instance is not None: full_instance.stop.set(); full_instance.thread.join(timeout=5)
     if workspace_instance is not None: workspace_instance.close()
 app=FastAPI(title='flyByWire local lab',lifespan=lifespan)
-# A hosted demo (e.g. Railway) serves one public domain and never drives hardware.
-PUBLIC_HOST=os.environ.get('FLYBYWIRE_PUBLIC_HOST') or os.environ.get('RAILWAY_PUBLIC_DOMAIN') or ''
-HOSTED=bool(PUBLIC_HOST)
+# A hosted demo (e.g. Railway) serves its public domains and never drives hardware.
+# FLYBYWIRE_PUBLIC_HOST takes a comma-separated list (custom domains); Railway adds its own.
+PUBLIC_HOSTS=[h.strip() for h in (os.environ.get('FLYBYWIRE_PUBLIC_HOST','')+','+os.environ.get('RAILWAY_PUBLIC_DOMAIN','')).split(',') if h.strip()]
+HOSTED=bool(PUBLIC_HOSTS)
 LOCAL_ORIGINS=r'http://(127\.0\.0\.1|localhost)(:\d+)?'
-ALLOWED_ORIGINS=LOCAL_ORIGINS+('|https://'+re.escape(PUBLIC_HOST) if HOSTED else '')
-app.add_middleware(TrustedHostMiddleware,allowed_hosts=['127.0.0.1','localhost','testserver']+([PUBLIC_HOST] if HOSTED else []))
+ALLOWED_ORIGINS='|'.join([LOCAL_ORIGINS]+['https://'+re.escape(h) for h in PUBLIC_HOSTS])
+app.add_middleware(TrustedHostMiddleware,allowed_hosts=['127.0.0.1','localhost','testserver']+PUBLIC_HOSTS)
 app.add_middleware(CORSMiddleware,allow_origin_regex=ALLOWED_ORIGINS,allow_methods=['GET','POST'],allow_headers=['Content-Type'])
 @app.middleware('http')
 async def origin_guard(request:Request,call_next):
